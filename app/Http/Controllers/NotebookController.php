@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notebook;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+
 use Illuminate\Http\Request;
+
 
 class NotebookController extends Controller
 {
@@ -12,7 +17,10 @@ class NotebookController extends Controller
      */
     public function index()
     {
-        //
+        $user_id = Auth::id();
+        $notebooks = Notebook::where('user_id', $user_id)->get();
+
+        return view('notebooks.index', compact('notebooks'));
     }
 
     /**
@@ -20,7 +28,7 @@ class NotebookController extends Controller
      */
     public function create()
     {
-        //
+        return view('notebooks.create');
     }
 
     /**
@@ -28,7 +36,14 @@ class NotebookController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+        ]);
+        Notebook::create([
+            'name' => $request->name,
+            'user_id' => Auth::id(),
+        ]);
+        return to_route('notebooks.index')->with('success', 'Notebook created successfully!');
     }
 
     /**

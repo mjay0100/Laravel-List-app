@@ -12,8 +12,10 @@
                   @forelse ( $notes as $note )
                       <div class="bg-white p-6 overflow-hidden shadow-sm sm:rounded-lg">
                         <h2 class="font-bold text-2xl text-indigo-600">
+<a class="hover:underline" href={{route('notes.show',$note)}}>
                             {{$note->title}}
-                        </h2>
+    
+</a>                        </h2>
                         <p class="mt-2">
                             {{Str::limit($note->text,200,'...')}}
                         </p>

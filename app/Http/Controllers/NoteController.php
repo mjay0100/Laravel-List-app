@@ -5,17 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class NoteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
         $user_id = Auth::id();
-        $notes = Note::where('user_id', $user_id)->paginate(5);
+        $notes = Note::where('user_id', $user_id)->paginate(2);
 
         return view('notes.index', compact('notes'));
     }
@@ -25,7 +22,6 @@ class NoteController extends Controller
      */
     public function create()
     {
-        //
         return view('notes.create');
     }
 
@@ -38,8 +34,13 @@ class NoteController extends Controller
             'title' => 'required',
             'text' => 'required',
         ]);
-
-        dd($request);
+        Note::create([
+            'user_id' => Auth::id(),
+            'title' => $request->title,
+            'text' => $request->text,
+            'uuid' => Str::uuid()->toString(), // Generate and assign UUID
+        ]);
+        return redirect()->route('notes.index')->with('success', 'Note created successfully!');
     }
 
     /**
@@ -47,7 +48,13 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
-        //
+        // Check if the note belongs to the authenticated user
+        if ($note->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Pass the note to the view
+        return view('notes.show', ['note' => $note]);
     }
 
     /**
@@ -55,7 +62,13 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        //
+        // Check if the note belongs to the authenticated user
+        if ($note->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Pass the note to the view
+        return view('notes.edit', ['note' => $note]);
     }
 
     /**
@@ -63,7 +76,23 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
-        //
+        if ($note->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        // Validate the request data
+        $request->validate([
+            'title' => 'required',
+            'text' => 'required',
+        ]);
+
+        // Update the note
+        $note->update([
+            'title' => $request->title,
+            'text' => $request->text,
+        ]);
+
+        // Redirect with a success message
+        return to_route('notes.index')->with('success', 'Note updated successfully!');
     }
 
     /**
@@ -71,6 +100,15 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
-        //
+        // Check if the authenticated user owns the note
+        if (Auth::id() !== $note->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Delete the note
+        $note->delete();
+
+        // Redirect back to the notes index with a success message
+        return to_route('notes.index')->with('success', 'Note deleted successfully!');
     }
 }

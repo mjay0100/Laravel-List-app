@@ -10,7 +10,9 @@
             <div class="bg-white p-6 overflow-hidden shadow-sm sm:rounded-lg max-w-2xl">
               <form action="{{ route('notes.store') }}" method="post">
                 @csrf
+                {{-- retains user input if form submission fails --}}
                 <x-text-input name="title" class="w-full" placeholder="Note title" value="{{@old('title')}}"></x-text-input>
+                {{-- display error message --}}
                 @error('title')
                 <div class="text-sm mt-1 text-red-500">
                     {{$message}}

@@ -26,6 +26,7 @@ class NoteController extends Controller
     public function create()
     {
         //
+        return view('notes.create');
     }
 
     /**
@@ -33,7 +34,12 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'text' => 'required',
+        ]);
+
+        dd($request);
     }
 
     /**

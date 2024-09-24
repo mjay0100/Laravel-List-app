@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+use App\Models\Notebook;
+
 class NoteController extends Controller
 {
     public function index()
@@ -22,7 +24,8 @@ class NoteController extends Controller
      */
     public function create()
     {
-        return view('notes.create');
+        $notebooks = Notebook::where('user_id', Auth::id())->get();
+        return view('notes.create', compact('notebooks'));
     }
 
     /**
@@ -39,6 +42,7 @@ class NoteController extends Controller
             'title' => $request->title,
             'text' => $request->text,
             'uuid' => Str::uuid()->toString(), // Generate and assign UUID
+            'notebook_id' => $request->notebook_id
         ]);
         return redirect()->route('notes.index')->with('success', 'Note created successfully!');
     }
@@ -62,13 +66,15 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        // Check if the note belongs to the authenticated user
         if ($note->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Pass the note to the view
-        return view('notes.edit', ['note' => $note]);
+        // Fetch the user's notebooks
+        $notebooks = Notebook::where('user_id', Auth::id())->get();
+
+        // Pass both notebooks and the note to the edit view
+        return view('notes.edit', compact('notebooks', 'note'));
     }
 
     /**
@@ -89,6 +95,7 @@ class NoteController extends Controller
         $note->update([
             'title' => $request->title,
             'text' => $request->text,
+            'notebook_id' => $request->notebook_id,
         ]);
 
         // Redirect with a success message

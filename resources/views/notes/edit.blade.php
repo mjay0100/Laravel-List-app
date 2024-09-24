@@ -27,6 +27,15 @@
                             {{ $message }}
                         </div>
                     @enderror
+                    <select name="notebook_id"
+                        class='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500
+                        rounded-md shadow-sm my-4 w-full'>
+                        <option value="">Select Notebook</option>
+                        @foreach ($notebooks as $notebook)
+                            <option value="{{ $notebook->id }}" @if ($notebook->id == $note->notebook_id) selected @endif>
+                                {{ $notebook->name }}</option>
+                        @endforeach
+                    </select>
                     <x-primary-button class="mt-6">Save note</x-primary-button>
                 </form>
             </div>

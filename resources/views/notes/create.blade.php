@@ -8,26 +8,35 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white p-6 overflow-hidden shadow-sm sm:rounded-lg max-w-2xl">
-              <form action="{{ route('notes.store') }}" method="post">
-                @csrf
-                {{-- retains user input if form submission fails --}}
-                <x-text-input name="title" class="w-full" placeholder="Note title" value="{{@old('title')}}"></x-text-input>
-                {{-- display error message --}}
-                @error('title')
-                <div class="text-sm mt-1 text-red-500">
-                    {{$message}}
-                </div>
-                    
-                @enderror
-                <x-textarea name="text" placeholder="Type your note" rows="8"  value="{{@old('text')}}" class="w-full mt-6"></x-textarea>
-                 @error('text')
-                <div class="text-sm mt-1 text-red-500">
-                    {{$message}}
-                </div>
-                    
-                @enderror
-                <x-primary-button class="mt-6">Save note</x-primary-button>
-              </form>
+                <form action="{{ route('notes.store') }}" method="post">
+                    @csrf
+                    {{-- retains user input if form submission fails --}}
+                    <x-text-input name="title" class="w-full" placeholder="Note title"
+                        value="{{ @old('title') }}"></x-text-input>
+                    {{-- display error message --}}
+                    @error('title')
+                        <div class="text-sm mt-1 text-red-500">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                    <x-textarea name="text" placeholder="Type your note" rows="8" value="{{ @old('text') }}"
+                        class="w-full mt-6"></x-textarea>
+                    @error('text')
+                        <div class="text-sm mt-1 text-red-500">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    <select name="notebook_id"
+                        class='border-gray-300 focus:border-indigo-500 focus:ring-indigo-500
+                        rounded-md shadow-sm my-4 w-full'>
+                        <option value="">Select Notebook</option>
+                        @foreach ($notebooks as $notebook)
+                            <option value="{{ $notebook->id }}">{{ $notebook->name }}</option>
+                        @endforeach
+                    </select>
+                    <x-primary-button class="mt-6">Save note</x-primary-button>
+                </form>
             </div>
         </div>
     </div>
